@@ -203,11 +203,11 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
     if(reduction_method2 == 'umap') {
       ### uMAP
       message('UMAP')
-      sobj <- Seurat::RunUMAP(object = sobj, assay = assay, graph = paste0(assay, '_snn'), reduction = dimred, seed.use = my_seed, dims = 1:ncomp, verbose = FALSE)
+      suppressMessages(sobj <- Seurat::RunUMAP(object = sobj, assay = assay, reduction = dimred, seed.use = my_seed, dims = 1:ncomp, verbose = FALSE))
     } else if(reduction_method2 == 'tsne') {
       ### TSNE
       message('TSNE')
-      sobj <- Seurat::RunTSNE(object = sobj, assay = assay, graph.name = paste0(assay, '_snn'), reduction = dimred, seed.use = my_seed, dims = 1:ncomp, verbose = FALSE)
+      suppressMessages(sobj <- Seurat::RunTSNE(object = sobj, assay = assay, graph.name = paste0(assay, '_snn'), reduction = dimred, seed.use = my_seed, dims = 1:ncomp, verbose = FALSE))
     }
     dimred <- reduction_method2
   }
