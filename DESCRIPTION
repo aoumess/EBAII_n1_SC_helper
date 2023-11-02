@@ -1,0 +1,30 @@
+Encoding: UTF-8
+Package: EBAII.n1.SC.helper
+Type: Package
+Title: Helper package for EBAII n1 SC
+Version: 0.0.2
+Date: 2023-10-17
+Author: Bastien Job
+Authors@R: person("Bastien", "Job", email = "bastien.job@inserm.fr", role = c("aut", "cre"))
+Depends: R(>= 4.0.0)
+Imports:
+  Seurat,
+  sparseMatrixStats,
+  knitr,
+  SoupX,
+  scran,
+  matrixStats,
+  Matrix,
+  pcaExplorer,
+  ComplexHeatmap,
+  circlize,
+  celldex,
+  SingleR,
+  BiocParallel,
+  methods
+biocViews: Software
+BugReports: https://github.com/aoumess/EBAII_n1_SC_helper/issues
+Description: Helper package for the EBAII n1 SC traning school, to ease the analysis of scRNAseq Seurat data.
+License: GPL3 + file LICENSE
+LazyData: false
+Byte-Compile: yes
