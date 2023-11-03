@@ -2,7 +2,8 @@
 \alias{dimred_covar_cor}
 \title{Assess the weight of cell metadata covariates on the components of a dimension reduction components}
 \usage{
-  dimred_covar_cor(sobj = NULL, dimred = 'pca', ncomp = 10, return_p = FALSE)
+  dimred_covar_cor(sobj = NULL, dimred = 'pca', ncomp = 10, 
+  return_p = FALSE)
 }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}

@@ -2,7 +2,9 @@
 \alias{SoupX_auto}
 \title{Easy way to run SoupX in automatic mode}
 \usage{
-  SoupX_auto(sobj = NULL, assay = 'RNA', scmat_raw = NULL, soupQuantile = 0.9, contaminationRange = c(.01, .8), soupRange = c(0,100), return_object = FALSE, doPlot = FALSE) }
+  SoupX_auto(sobj = NULL, assay = 'RNA', scmat_raw = NULL, 
+  soupQuantile = 0.9, contaminationRange = c(.01, .8), 
+  soupRange = c(0,100), return_object = FALSE, doPlot = FALSE) }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}
   \item{assay}{The \code{Assay} to extract data from.}

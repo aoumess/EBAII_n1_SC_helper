@@ -30,31 +30,31 @@ seurat4_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRU
   # projectname <- sobj@project.name
   
   ### OBJECT VERSION
-  message('OBJECT VERSION :\t', sobj@version)
+  cat(paste0('OBJECT VERSION :\t', sobj@version), '\n')
   
   ### PROJECT NAME
   proj_name <- Seurat::Project(sobj)
-  message('PROJECT :\t[', proj_name, ']')
+  cat(paste0('PROJECT :\t[', proj_name, ']'), '\n')
   
   ### ASSAYS
   if('assay' %in% describe) {
-    message('\n[ASSAYS]')
+    cat('\n[ASSAYS]\n')
     expassays <- Seurat::Assays(object = sobj)
     for (ea in seq_along(expassays)) {
       assay_name <- expassays[ea]
       cur_assay <- Seurat::Assays(object = sobj, slot = assay_name)
-      message(paste0('   ASSAY ', ea, ' :\t[', assay_name, ']', if(Seurat::DefaultAssay(sobj) == assay_name) ' [ACTIVE]'))
+      cat(paste0('   ASSAY ', ea, ' :\t[', assay_name, ']', if(Seurat::DefaultAssay(sobj) == assay_name) ' [ACTIVE]'), '\n')
       ## SLOTS
       for (sl in seq_along(slots)) {
         slot_name <- slots[sl]
         cur_slot <- Seurat::GetAssayData(object = sobj, assay = assay_name, slot = slot_name)
         slot_dimprod <- prod(dim(cur_slot))
-        message('      SLOT ', sl, ' :\t[', slot_name, ']\tDims:[', nrow(cur_slot), ' x ', ncol(cur_slot), if(slot_dimprod > 0) paste0(']  Range:[', paste(sprintf('%.2f', range(cur_slot, na.rm = TRUE)), collapse = '-')) else NULL, ']')
+        cat(paste0('      SLOT ', sl, ' :\t[', slot_name, ']\tDims:[', nrow(cur_slot), ' x ', ncol(cur_slot), if(slot_dimprod > 0) paste0(']  Range:[', paste(sprintf('%.2f', range(cur_slot, na.rm = TRUE)), collapse = '-')) else NULL, ']'), '\n')
         ## Adding sparsity info when needed :
         if (sparse_level & is(cur_slot, 'dgCMatrix')) {
           splev <- sum(sparseMatrixStats::colCounts(x = cur_slot, value = 0)) / slot_dimprod
-          message('         Sparsity :\t', sprintf('%.5f', splev * 100), '%')
-          if(slot_name == 'counts') message('         Counts :\t', round(sum(cur_slot)))
+          cat(paste0('         Sparsity :\t', sprintf('%.5f', splev * 100), '%'), '\n')
+          if(slot_name == 'counts') cat(paste0('         Counts :\t', round(sum(cur_slot))), '\n')
         }
       }
     }
@@ -62,36 +62,36 @@ seurat4_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRU
   
   ### DIMRED
   if ('dimred' %in% describe) {
-    message('\n[DIMREDS]')
+    cat('\n[DIMREDS]\n')
     dimreds <- Seurat::Reductions(object = sobj)
     for (dr in seq_along(dimreds)) {
       dr_name <- dimreds[dr]
       cur_dr <- Seurat::Reductions(object = sobj, slot = dr_name)
-      message('   DIMRED ', dr, ' : [', dimreds[dr], ']  Dims:[', nrow(cur_dr), ' x ', ncol(cur_dr), ']')
+      cat(paste0('   DIMRED ', dr, ' : [', dimreds[dr], ']  Dims:[', nrow(cur_dr), ' x ', ncol(cur_dr), ']'), '\n')
     }
   }
   
   ### GRAPHS
   if(length(sobj@graphs) > 0) {
-    message('\n[GRAPHS]')
+    cat('\n[GRAPHS]\n')
     for (gn in names(sobj@graphs)) {
-      message('  ', gn)
+      cat(paste0('  ', gn), '\n')
     }
   }
   
   ### BARCODE META
   if('coldata' %in% describe) {
     bc.df <- as.data.frame(sobj@meta.data)
-    message('\n[BARCODES METADATA]')
+    cat('\n[BARCODES METADATA]\n')
     for (b in seq_len(ncol(bc.df))) {
       b.fac <- as.factor(bc.df[,b])
       if (nlevels(b.fac) < max_levels) {
         # message('\n', colnames(bc.df)[b])
         b.tbl <- as.data.frame(table(b.fac, useNA = 'always'))
         colnames(b.tbl)[1] <- colnames(bc.df)[b]
-        print(knitr::kable(b.tbl, escape = FALSE))
+        cat(knitr::kable(b.tbl, format = 'simple', escape = FALSE), sep = '\n')
       } else {
-        message('\n',colnames(bc.df)[b])
+        cat('\n',colnames(bc.df)[b], '\n')
         print(summary(bc.df[,b]))
       }
     }
@@ -433,7 +433,7 @@ cell_annot <- function(sobj = NULL, assay = 'RNA', slot = 'data', celldex_setnam
   ## Get list of celldex databases
   library(celldex)
   cdx <- ls('package:celldex')
-  detach(name = 'package:celldex', unload = TRUE)
+  detach(name = 'package:celldex')
   
   ## Return the celldex list
   if(list_celldex) {
@@ -470,7 +470,7 @@ cell_annot <- function(sobj = NULL, assay = 'RNA', slot = 'data', celldex_setnam
     print(celldex_setname)
     library(celldex)
     annotation <- suppressMessages(do.call(match.fun(paste0(celldex_setname)), args = list()))
-    detach("package:celldex", unload = TRUE)
+    detach("package:celldex")
     
     ## Get matrix 
     norm_exp_mat <- Seurat::GetAssayData(object = sobj, assay = assay, slot = slot)

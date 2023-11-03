@@ -2,7 +2,8 @@
 \alias{cell_annot}
 \title{Performs automatic cell type annotation of a Seurat object, at the cell or cluster level, using SingleR and celldex databases}
 \usage{
-  cell_annot(sobj = NULL, assay = 'RNA', slot = 'data', celldex_setname = 'ImmGenData', group_by = NULL, list_celldex = FALSE)
+  cell_annot(sobj = NULL, assay = 'RNA', slot = 'data', 
+  celldex_setname = 'ImmGenData', group_by = NULL, list_celldex = FALSE)
 }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}

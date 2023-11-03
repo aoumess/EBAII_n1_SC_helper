@@ -2,7 +2,8 @@
 \alias{seurat4_descriptor}
 \title{Quick description of a Seurat object content}
 \usage{
-  seurat4_descriptor(sobj = NULL, describe = 'all', sparse_level = TRUE, max_levels = 100)
+  seurat4_descriptor(sobj = NULL, describe = 'all', 
+  sparse_level = TRUE, max_levels = 100)
 }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}

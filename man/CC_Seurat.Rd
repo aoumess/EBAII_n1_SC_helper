@@ -2,7 +2,8 @@
 \alias{CC_Seurat}
 \title{Compute cell-cyle state/score prediction, using the Seurat method}
 \usage{
-  CC_Seurat(sobj = NULL, assay = 'RNA', seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337)
+  CC_Seurat(sobj = NULL, assay = 'RNA', seurat_cc_genes = NULL,
+  SmG2M = TRUE, nbin = 24, my_seed = 1337)
 }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}
