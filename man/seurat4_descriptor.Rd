@@ -15,7 +15,7 @@
   This function performs a detailed by quick description of the content of a Seurat (version <= 4).
 }
 \value{
-  Nothing will be returned, all description will be written on the standard output.
+  Nothing will be returned, all descriptions will be written on the standard output.
 }
 \details{
   The default assay ("active" assay, as per Seurat's vocabulary), will be tagged with the '[ACTIVE]' word in its description.

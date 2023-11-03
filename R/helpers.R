@@ -259,8 +259,10 @@ SoupX_auto <- function(sobj = NULL, assay = 'RNA', scmat_raw = NULL, soupQuantil
     spChan <- SoupX::estimateSoup(sc = spChan, soupRange = soupRange)
   }
   ## Display Top 20 contributing genes
-  message('Soup-contributing features (Top 20) :')
-  print(knitr::kable(head(spChan$soupProfile[order(spChan$soupProfile$est, decreasing = TRUE), ], n = 20)))
+  if (!return_object) {
+    cat('\nSoup-contributing features (Top 20) :\n')
+    print(knitr::kable(head(spChan$soupProfile[order(spChan$soupProfile$est, decreasing = TRUE), ], n = 20)))
+  }
   ## Quick clustering needed
   spClust <- scran::quickCluster(scmat_filt, method = "igraph")
   ## Adding clusters to the SoupChannel object
@@ -277,9 +279,9 @@ SoupX_auto <- function(sobj = NULL, assay = 'RNA', scmat_raw = NULL, soupQuantil
   
   ## Removing soup (adjusting counts)
   if(return_object) {
-    message('Counts BEFORE SoupX : ', sum(scmat_filt))
+    cat('Counts BEFORE SoupX : ', sum(scmat_filt))
     scmat_soupx <- SoupX::adjustCounts(sX, method = 'subtraction', roundToInt = TRUE, tol = .001, pCut = .01)
-    message('Counts AFTER SoupX : ', sum(scmat_soupx))
+    cat('Counts AFTER SoupX : ', sum(scmat_soupx))
     # sobj@assays[[assay]]@counts <- scmat_soupx
     newmeta <- as.data.frame(sobj@meta.data)
     newmeta <- newmeta[,!colnames(newmeta) %in% c('orig.ident', paste0('nCount_', assay),  paste0('nFeature_', assay))]
