@@ -217,7 +217,7 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
     pl <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, group.by = group_by, pt.size = pt_size, shuffle = TRUE) + if(dark_theme) Seurat::DarkTheme()
     if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
   } else if (!is.null(features)) {
-    print(Seurat::FeaturePlot(object = sobj, dims = c(1,2), reduction = dimred, features = features, slot = 'data', pt.size = pt_size) + if(dark_theme) Seurat::DarkTheme())
+    print(Seurat::FeaturePlot(object = sobj, dims = c(1,2), reduction = dimred, features = features, slot = 'data', pt.size = pt_size, cols = c('white', 'blue')) + if(dark_theme) Seurat::DarkTheme())
   } else {
     print(Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) + if(dark_theme) Seurat::DarkTheme())
   }
@@ -228,24 +228,19 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
 
 ## Function to perform SoupX on a Seurat object
 ## TESTED on SoupX=1.6.2 with igraph=1.5.1, Seurat=4.4.0
-## sobj : (Seurat object corresponding to an empty droplets -filtered dataset
-## scmat_raw : (sparse)matrix corresponding to an NON- empty droplets -filtered dataset
+## scmat_filt : (sparse)matrix corresponding to an empty droplets -filtered count matrix
+## scmat_raw : (sparse)matrix corresponding to an NON- empty droplets -filtered count matrix
 ## soupQuantile, contaminationRange : see ?SoupX::autoEstCont
 ## contaminationRange : limits of the expected soup proportion
 ## soupRange : estimate soup fraction from features with total reads comprised in this range (only used when scmat_raw != NULL).
 ## return_object : TRUE = return the "unsouped" Seurat object ; FALSE = only perform soup estimation and return the rho estimation
 ## doPlot : Perform the SoupX estimation plot (rho distributions)
-SoupX_auto <- function(sobj = NULL, assay = 'RNA', scmat_raw = NULL, soupQuantile = 0.9, contaminationRange = c(.01, .8), soupRange = c(0,100), return_object = FALSE, doPlot = FALSE) {
+SoupX_auto <- function(scmat_filt = NULL, scmat_raw = NULL, soupQuantile = 0.9, contaminationRange = c(.01, .8), soupRange = c(0,100), return_object = FALSE, doPlot = FALSE) {
   
   ## Checks
-  if(is.null(sobj)) stop('A Seurat object is required !')
-  if(!is(sobj, 'Seurat')) stop('Provided sobj is not a proper Seurat object !')
-  if(is.null(scmat_raw)) message('No unfiltered raw counts matrix provided. Estimation will be based on filtered matrix only.')
-  cur_assays <- Seurat::Assays(sobj)
-  if (!assay %in% cur_assays) stop('Requested assay [', assay, '] not found. Available assays are : [', paste(cur_assays, collapse = ', '), ']')
+  if(is.null(scmat_filt)) stop('A filtered count matrix is required !')
   
-  ## Get expression matrix
-  scmat_filt <- Seurat::GetAssayData(object = sobj, assay = assay, slot = 'counts')
+  if(is.null(scmat_raw)) message('No unfiltered raw counts matrix provided. Estimation will be based on filtered matrix only.')
   
   ## If no raw matrix
   if (is.null(scmat_raw)) {
@@ -273,21 +268,14 @@ SoupX_auto <- function(sobj = NULL, assay = 'RNA', scmat_raw = NULL, soupQuantil
                            contaminationRange = contaminationRange, rhoMaxFDR = .2, 
                            priorRho = .05, priorRhoStdDev = .1, 
                            forceAccept = FALSE)
-  ## Display soup markers
-  # message('Soup-marking features (Top 50) :')
-  # print(knitr::kable(sX$fit$markersUsed[1:50, c('gene', 'geneFrequencyGlobal', 'qval')]))
   
   ## Removing soup (adjusting counts)
   if(return_object) {
-    cat('Counts BEFORE SoupX : ', sum(scmat_filt))
+    cat('Counts BEFORE SoupX : ', sum(scmat_filt), '\n')
     scmat_soupx <- SoupX::adjustCounts(sX, method = 'subtraction', roundToInt = TRUE, tol = .001, pCut = .01)
-    cat('Counts AFTER SoupX : ', sum(scmat_soupx))
-    # sobj@assays[[assay]]@counts <- scmat_soupx
-    newmeta <- as.data.frame(sobj@meta.data)
-    newmeta <- newmeta[,!colnames(newmeta) %in% c('orig.ident', paste0('nCount_', assay),  paste0('nFeature_', assay))]
-    sobj <- Seurat::CreateSeuratObject(counts = scmat_soupx,project = sobj@project.name, meta.data = newmeta)
-    rm(scmat_soupx, scmat_filt)
-    return(sobj)
+    cat('Counts AFTER SoupX : ', sum(scmat_soupx), '\n')
+    rm(scmat_filt)
+    return(scmat_soupx)
   } else return(sX$fit$rhoEst)
 }
 
