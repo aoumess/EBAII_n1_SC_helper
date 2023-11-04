@@ -19,10 +19,6 @@ seurat4_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRU
   
   retlist <- list()
   
-  # ## Handling merged case
-  # if(length(sobj@meta.data$misc) > 1 & all(vapply(sobj@metadata$misc, is.list, TRUE)))
-  #   sobj@metadata$misc <- list(projectname = paste(vapply(sobj@metadata$misc, function(x) x$projectname, "a"), collapse = '.'), id = max(vapply(sobj@metadata$misc, function(x) x$id, 1)))
-  
   ## Seurat slots
   slots <- c('counts', 'data', 'scale.data')
   
@@ -50,11 +46,12 @@ seurat4_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRU
         cur_slot <- Seurat::GetAssayData(object = sobj, assay = assay_name, slot = slot_name)
         slot_dimprod <- prod(dim(cur_slot))
         cat(paste0('      SLOT ', sl, ' :\t[', slot_name, ']\tDims:[', nrow(cur_slot), ' x ', ncol(cur_slot), if(slot_dimprod > 0) paste0(']  Range:[', paste(sprintf('%.2f', range(cur_slot, na.rm = TRUE)), collapse = '-')) else NULL, ']'), '\n')
+        ## Total counts if slot is "counts"
+        if(slot_name == 'counts') cat(paste0('         Counts :\t', round(sum(cur_slot))), '\n')
         ## Adding sparsity info when needed :
         if (sparse_level & is(cur_slot, 'dgCMatrix')) {
           splev <- sum(sparseMatrixStats::colCounts(x = cur_slot, value = 0)) / slot_dimprod
           cat(paste0('         Sparsity :\t', sprintf('%.5f', splev * 100), '%'), '\n')
-          if(slot_name == 'counts') cat(paste0('         Counts :\t', round(sum(cur_slot))), '\n')
         }
       }
     }
