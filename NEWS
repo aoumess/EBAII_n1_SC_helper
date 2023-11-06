@@ -1,6 +1,12 @@
 EBAII.n1.SC.helper
 -------------------
 
+v0.0.3 *Concrete*
+-----------------
+* Reworked SoupX (on matrix now rather than Seurat object)
+* Many tweaks
+* Many typos
+
 v0.0.2 *Real*
 -----------------
 * Multiple functions added

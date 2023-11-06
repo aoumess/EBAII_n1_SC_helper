@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: EBAII.n1.SC.helper
 Type: Package
 Title: Helper package for EBAII n1 SC
-Version: 0.0.2
+Version: 0.0.3
 Date: 2023-10-17
 Author: Bastien Job
 Authors@R: person("Bastien", "Job", email = "bastien.job@inserm.fr", role = c("aut", "cre"))
