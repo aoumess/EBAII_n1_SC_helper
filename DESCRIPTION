@@ -8,20 +8,20 @@ Author: Bastien Job
 Authors@R: person("Bastien", "Job", email = "bastien.job@inserm.fr", role = c("aut", "cre"))
 Depends: R(>= 4.0.0)
 Imports:
-  Seurat,
-  sparseMatrixStats,
-  knitr,
-  SoupX,
-  scran,
-  matrixStats,
-  Matrix,
-  pcaExplorer,
-  ComplexHeatmap,
-  circlize,
-  celldex,
-  SingleR,
-  BiocParallel,
-  methods
+  Seurat=4.4.0,
+  sparseMatrixStats=1.10.0,
+  knitr=1.45,
+  SoupX=1.6.2,
+  scran=1.26.2,
+  matrixStats=1.0.0,
+  Matrix=1.6-1.1,
+  pcaExplorer=2.24.0,
+  ComplexHeatmap=2.14.0,
+  circlize=0.4.15,
+  celldex=1.8.0,
+  SingleR=2.0.0,
+  BiocParallel=1.32.6,
+  methods=4.2.3
 biocViews: Software
 BugReports: https://github.com/aoumess/EBAII_n1_SC_helper/issues
 Description: Helper package for the EBAII n1 SC traning school, to ease the analysis of scRNAseq Seurat data.
