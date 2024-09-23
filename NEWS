@@ -1,6 +1,11 @@
 EBAII.n1.SC.helper
 -------------------
 
+v0.0.4 *TenRings*
+-----------------
+* Added support for SeuratObject v5
+* Accordingly, renamed seurat4_descriptor() to SeuratObject_descriptor()
+
 v0.0.3 *Concrete*
 -----------------
 * Reworked SoupX (on matrix now rather than Seurat object)

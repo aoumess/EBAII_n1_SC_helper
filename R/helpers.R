@@ -1,9 +1,9 @@
 ## Seurat-descriptor
-## TESTED ON : Seurat=4.4.0, sparseMatrixStats=1.13.4 , knitr=.44
+## TESTED ON : Seurat=4.4.0,5.1.0, sparseMatrixStats=1.13.4 , knitr=.44
 ## sobj           [Seurat]    A Seurat object
 ## max_levels     [int>0]     Maximal number of unique values to consider a barcode annotation as a factor rather than a continuous numeric vector
 ## describe       ['all', 'assays', 'dimred', 'coldata']    Type of entries to describe
-seurat4_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRUE, max_levels = 100) {
+SeuratObject_descriptor <- function(sobj = NULL, describe = 'all', sparse_level = TRUE, max_levels = 100) {
   
   ## Checks
   if (is.null(sobj)) stop('A Seurat object is required !')
@@ -139,6 +139,8 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
     
     ## Checking if slot exists
     cur_slots <- methods::slotNames(Seurat::Assays(object = sobj, slot = assay))
+    ### Handling Seurat5
+    if ('layers' %in% cur_slots) cur_slots <- base::names(Seurat::Assays(object = sobj, slot = assay)@layers)
     if(!slot %in% cur_slots) stop('Slot [', slot, '] not found in assay [', assay, '] !')
     
     ## Check slot population
