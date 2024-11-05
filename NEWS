@@ -1,6 +1,10 @@
 EBAII.n1.SC.helper
 -------------------
 
+v0.0.5 *ByeSMmom*
+-----------------
+* Small fix in CC_Seurat to support SeuratObject v5 : added "slot" parameter with "counts" as default value.
+
 v0.0.4 *TenRings*
 -----------------
 * Added support for SeuratObject v5
