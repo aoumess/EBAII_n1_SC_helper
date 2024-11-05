@@ -337,7 +337,7 @@ count_rate_metric <- function(sobj = NULL, assay = 'RNA', features = NULL) {
 }
 
 ## Computes Seurat's cell cycle phase/scores prediction
-CC_Seurat <- function(sobj = NULL, assay = 'RNA', seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337) {
+CC_Seurat <- function(sobj = NULL, assay = "RNA", slot = "counts", seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337L) {
   
   ## Check sobj
   if(is.null(sobj)) stop('A Seurat object is required !')
@@ -347,7 +347,7 @@ CC_Seurat <- function(sobj = NULL, assay = 'RNA', seurat_cc_genes = NULL, SmG2M 
   
   ## Run CC
   set.seed(my_seed)
-  sobj <- Seurat::CellCycleScoring(object = sobj, s.features = seurat_cc_genes$s.genes, g2m.features = seurat_cc_genes$g2m.genes, assay = assay, nbin = nbin, seed = my_seed)
+  sobj <- Seurat::CellCycleScoring(object = sobj, s.features = seurat_cc_genes$s.genes, g2m.features = seurat_cc_genes$g2m.genes, assay = assay, slot = slot, nbin = nbin, seed = my_seed)
   sobj$CC_Seurat_S.Score <- sobj$S.Score
   sobj$CC_Seurat_G2M.Score <- sobj$G2M.Score
   sobj$CC_Seurat_Phase <- as.factor(sobj$Phase)
