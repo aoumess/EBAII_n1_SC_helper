@@ -2,12 +2,13 @@
 \alias{CC_Seurat}
 \title{Compute cell-cyle state/score prediction, using the Seurat method}
 \usage{
-  CC_Seurat(sobj = NULL, assay = 'RNA', seurat_cc_genes = NULL,
+  CC_Seurat(sobj = NULL, assay = "RNA", slot = "counts", seurat_cc_genes = NULL,
   SmG2M = TRUE, nbin = 24, my_seed = 1337)
 }
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}
   \item{assay}{The \code{Assay} to extract data from.}
+  \item{slot}{The \code{Slot} to extract data from.}
   \item{seurat_cc_genes}{A list of two named vectors ('s.genes', 'g2m.genes'), containing the Seurat cell cycle genes. See \code{?Seurat::CellCycleScoring()}.}
   \item{SmG2M}{Compute the "S minus G2M" score.}
   \item{nbin}{Number of bins. See \code{?Seurat::AddModuleScore()}.}
