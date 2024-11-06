@@ -45,7 +45,7 @@ SeuratObject_descriptor <- function(sobj = NULL, describe = 'all', sparse_level 
         slot_name <- slots[sl]
         cur_slot <- Seurat::GetAssayData(object = sobj, assay = assay_name, slot = slot_name)
         slot_dimprod <- prod(dim(cur_slot))
-        cat(paste0('      SLOT ', sl, ' :\t[', slot_name, ']\tDims:[', nrow(cur_slot), ' x ', ncol(cur_slot), if(slot_dimprod > 0) paste0(']  Range:[', paste(sprintf('%.2f', range(cur_slot, na.rm = TRUE)), collapse = '-')) else NULL, ']'), '\n')
+        cat(paste0('      SLOT/LAYER ', sl, ' :\t[', slot_name, ']\tDims:[', nrow(cur_slot), ' x ', ncol(cur_slot), if(slot_dimprod > 0) paste0(']  Range:[', paste(sprintf('%.2f', range(cur_slot, na.rm = TRUE)), collapse = '-')) else NULL, ']'), '\n')
         ## Total counts if slot is "counts"
         if(slot_name == 'counts') cat(paste0('         Counts :\t', round(sum(cur_slot))), '\n')
         ## Adding sparsity info when needed :
@@ -337,7 +337,7 @@ count_rate_metric <- function(sobj = NULL, assay = 'RNA', features = NULL) {
 }
 
 ## Computes Seurat's cell cycle phase/scores prediction
-CC_Seurat <- function(sobj = NULL, assay = "RNA", slot = "counts", seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337L) {
+CC_Seurat <- function(sobj = NULL, assay = "RNA", seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337L) {
   
   ## Check sobj
   if(is.null(sobj)) stop('A Seurat object is required !')
@@ -345,9 +345,14 @@ CC_Seurat <- function(sobj = NULL, assay = "RNA", slot = "counts", seurat_cc_gen
   cur_assays <- Seurat::Assays(sobj)
   if (!assay %in% cur_assays) stop('Requested assay [', assay, '] not found. Available assays are : [', paste(cur_assays, collapse = ', '), ']')
   
+  ## Check if data slot/layer is populated
+  if (crossprod(dim(Seurat::GetAssayData(object = sobj, assay = assay, slot = 'data')))[1] == 0) {
+    sobj <- Seurat::NormalizeData(object = sobj, verbose = FALSE)
+  }
+  
   ## Run CC
   set.seed(my_seed)
-  sobj <- Seurat::CellCycleScoring(object = sobj, s.features = seurat_cc_genes$s.genes, g2m.features = seurat_cc_genes$g2m.genes, assay = assay, slot = slot, nbin = nbin, seed = my_seed)
+  sobj <- Seurat::CellCycleScoring(object = sobj, s.features = seurat_cc_genes$s.genes, g2m.features = seurat_cc_genes$g2m.genes, assay = assay, nbin = nbin, seed = my_seed)
   sobj$CC_Seurat_S.Score <- sobj$S.Score
   sobj$CC_Seurat_G2M.Score <- sobj$G2M.Score
   sobj$CC_Seurat_Phase <- as.factor(sobj$Phase)
@@ -367,7 +372,7 @@ CC_Cyclone <- function(sobj = NULL, assay = 'RNA', cyclone_cc_pairs = NULL, SmG2
   
   ## Run CC
   set.seed(my_seed)
-  cycres <- scran::cyclone(Seurat::as.SingleCellExperiment(sobj, assay = assay), pairs = cyclone_cc_pairs, verbose = TRUE)
+  cycres <- scran::cyclone(x = Seurat::GetAssayData(object = sobj, assay = assay, slot = 'counts'), pairs = cyclone_cc_pairs, verbose = TRUE)
   sobj$CC_Cyclone_nG1.Score <- cycres$normalized.scores$G1
   sobj$CC_Cyclone_nS.Score <- cycres$normalized.scores$S
   sobj$CC_Cyclone_nG2M.Score <- cycres$normalized.scores$G2M
