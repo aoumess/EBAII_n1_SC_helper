@@ -13,7 +13,7 @@
   \item{scale}{Scale the matrix ?}
 }
 \description{
-  This function assesses the weight of any cell/barcode metadata covariate(s) on the first \code{ndim} components of a dimension reduction space, through two different tests, depending on the covariate data type : Spearman correlation test for continuous data (numerics), Kruskal-Wallis for categorical (fators)}.
+  This function assesses the weight of any cell/barcode metadata covariate(s) on the first \code{ndim} components of a dimension reduction space, through two different tests, depending on the covariate data type : Spearman correlation test for continuous data (numerics), Kruskal-Wallis for categorical (fators).
 }
 \value{
   A heatmap displaying the weight of each Spearman correlation and/or K-W test, from 0 to 1.
