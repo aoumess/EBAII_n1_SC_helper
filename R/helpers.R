@@ -393,22 +393,35 @@ dimred_covar_cor <- function(sobj = NULL, dimred = 'pca', ncomp = 10, return_p =
   
   ## Check sobj
   if(is.null(sobj)) stop('A Seurat object is required !')
+  if(is.null(dimred)) stop('A dimension reduction name is required !')
   if(!is(sobj, 'Seurat')) stop('Provided sobj is not a proper Seurat object !')
-  if (! 'pca' %in% Seurat::Reductions(sobj)) stop('Reduction [', dimred, '] not found in sobj !')
-  ## Get reduction
+  # if (! 'pca' %in% Seurat::Reductions(sobj)) stop('Reduction [', dimred, '] not found in sobj !')
+  ## Add PCA when needed
+  if (! dimred %in% Seurat::Reductions(sobj)) {
+    dimred <- "pca"
+    if (! "pca" %in% Seurat::Reductions(sobj)) {
+      ### Not the one requested
+      message("Computing PCA ...")
+      sobj <- Seurat::RunPCA(object = sobj, npcs = ncomp * 2, reduction.name = dimred, verbose = FALSE)
+    }
+  }
+  ## Get the PCA results
   cur_red <- Seurat::Reductions(object = sobj, slot = dimred)@cell.embeddings
   if (ncomp > ncol(cur_red)) {
     ncomp <- ncol(cur_red)
     message('More dimensions requested than available : Limiting to available ones (', ncomp, ') ...')
   }
   cur_meta <- as.data.frame(sobj@meta.data)
+  
   ## Convert logical & character to factor
   meta_types <- vapply(seq_along(colnames(cur_meta)), function(x) is(cur_meta[,x, drop = TRUE])[1], 'a')
   for (z in which(meta_types == 'logical' | meta_types == 'character')) cur_meta[,z] <- as.factor(cur_meta[,z])
+  
   ## Drop missing levels in factors
   meta_types <- vapply(seq_along(colnames(cur_meta)), function(x) is(cur_meta[,x, drop = TRUE])[1], 'a')
   for (z in which(meta_types == 'factor')) cur_meta[,z] <- droplevels(cur_meta[,z])
   
+  ## Correlate PCs and covariates
   pCor <- pcaExplorer::correlatePCs(pcaobj = list(x =  cur_red), coldata = cur_meta, pcs = 1:ncomp)
   ## FDR adjustment
   pCor <- matrix(data = p.adjust(p = pCor, method = 'BH'), nrow = nrow(pCor), ncol = ncol(pCor), dimnames = dimnames(pCor))
@@ -420,6 +433,8 @@ dimred_covar_cor <- function(sobj = NULL, dimred = 'pca', ncomp = 10, return_p =
   ## Return p-values
   if(return_p) return(pCor)
 }
+
+
 
 ## Cell annotation using SINGLER (by default with ImmGenData db from celldex)
 cell_annot <- function(sobj = NULL, assay = 'RNA', slot = 'data', celldex_setname = 'ImmGenData', group_by = NULL, list_celldex = FALSE) {
