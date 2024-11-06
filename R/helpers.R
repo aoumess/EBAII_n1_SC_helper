@@ -445,6 +445,9 @@ assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L
   if(!is.integer(ndim)) stop('ndim must be an integer > 0 !')
   if(ndim > ncol(mat)) stop('ndim must be <= ndim(mat) !')
   
+  ## Check markers
+  if(!is.null(markers)) markers <- markers[markers %in% rownames(mat)]
+  
   ## Split factors and continuous data
   conti.names <- factor.names <- c()
   for (x in colnames(covar.df)) {
@@ -523,9 +526,6 @@ assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L
                                    row_title = 'PCA dimensions',
                                    column_split = col.types,
                                    top_annotation = ComplexHeatmap::HeatmapAnnotation(Type = col.types, col = list(Type = setNames(object = c('lightblue','pink', 'green3'), nm = c('factor', 'continuous', 'marker')))))
-  svg(filename = out.file, width = width/96, height = height/96)
-  ComplexHeatmap::draw(BC.hm)
-  svg_off()
 }
 
 
