@@ -435,7 +435,7 @@ CC_Cyclone <- function(sobj = NULL, assay = 'RNA', cyclone_cc_pairs = NULL, SmG2
 # }
 
 
-assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE) {
+assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE, return.data = FALSE) {
   ## Checks
   if(is.null(mat)) stop('A matrix is required !')
   if(is.null(covar.df)) stop('A data.frame with covariates is required !')
@@ -479,7 +479,7 @@ assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L
     }
   }
   
-  ## Convert conti to Zscores
+  ## Convert markers to Zscores
   if (length(markers) > 0) {
     covar.df <- cbind(covar.df, t(mat[markers,]))
     for (x in markers) {
@@ -491,6 +491,8 @@ assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L
   if (any(c(center, scale))) mat <- base::scale(x = mat, center = center, scale = scale)
   ## Dimension reduction
   norm.red <- irlba::irlba(A = t(mat), nv = min(ndim+1, ncol(mat)))$u
+  
+  rm(mat)
   
   ## Setting output matrix
   bc.mat <- matrix(NA, ncol = length(col.names), nrow = ndim, dimnames = list(paste0("PCA", seq_len(ndim)), col.names))
@@ -526,6 +528,10 @@ assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L
                                    row_title = 'PCA dimensions',
                                    column_split = col.types,
                                    top_annotation = ComplexHeatmap::HeatmapAnnotation(Type = col.types, col = list(Type = setNames(object = c('lightblue','pink', 'green3'), nm = c('factor', 'continuous', 'marker')))))
+  print(BC.hm)
+  
+  ## Return the weight matrix ?
+  if(return.data) return(bc.mat)
 }
 
 

@@ -2,7 +2,7 @@
 \alias{assess_covar}
 \title{Assess the weight of cell metadata covariates on the components of a dimension reduction components}
 \usage{
-  assess_covar(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE)
+  assess_covar(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE, return.data = FALSE)
 }
 \arguments{
   \item{mat}{An feature-by-cell expression \code{matrix}.}
@@ -11,12 +11,13 @@
   \item{ndim}{Number of dimensions in which to assess covariates.}
   \item{center}{Center the matrix ?}
   \item{scale}{Scale the matrix ?}
+  \item{return.data}{Return the covariate weight matrix ?}
 }
 \description{
   This function assesses the weight of any cell/barcode metadata covariate(s) on the first \code{ndim} components of a dimension reduction space, through two different tests, depending on the covariate data type : Spearman correlation test for continuous data (numerics), Kruskal-Wallis for categorical (fators).
 }
 \value{
-  A heatmap displaying the weight of each Spearman correlation and/or K-W test, from 0 to 1.
+  A heatmap displaying the weight of each Spearman correlation and/or K-W test, from 0 to 1.RUE, returns the covariate weight matrix.
 }
 \author{
   Bastien Job
