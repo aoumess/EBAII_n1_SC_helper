@@ -212,13 +212,14 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
   }
   
   ## Plot
+  library(patchwork)
   if(!is.null(group_by)) {
-    pl <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, group.by = group_by, pt.size = pt_size, shuffle = TRUE) + if(dark_theme) Seurat::DarkTheme()
+    pl <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, group.by = group_by, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
     if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
   } else if (!is.null(features)) {
-    print(Seurat::FeaturePlot(object = sobj, dims = c(1,2), reduction = dimred, features = features, slot = 'data', pt.size = pt_size, cols = c('white', 'blue')) + if(dark_theme) Seurat::DarkTheme())
+    print(Seurat::FeaturePlot(object = sobj, dims = c(1,2), reduction = dimred, features = features, slot = 'data', pt.size = pt_size, cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
   } else {
-    print(Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) + if(dark_theme) Seurat::DarkTheme())
+    print(Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme())
   }
   
   ## Return object when requested
