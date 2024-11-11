@@ -9,7 +9,7 @@ Authors@R: person("Bastien", "Job", email = "bastien.job@inserm.fr", role = c("a
 Depends: R(>= 4.0.0)
 Imports:
   Seurat(>= 5.1.0),
-  patchwork(>=1.3.0),
+  patchwork(>= 1.3.0),
   sparseMatrixStats(>= 1.16.0),
   knitr(>= 1.47),
   SoupX(>= 1.6.2),
