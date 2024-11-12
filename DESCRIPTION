@@ -21,7 +21,8 @@ Imports:
   celldex(>= 1.14.0),
   SingleR(>= 2.6.0),
   BiocParallel(>= 1.38.0),
-  methods(>= 4.4.1)
+  methods(>= 4.4.1),
+  irlba(>= 2.3.5.1)
 biocViews: Software
 BugReports: https://github.com/aoumess/EBAII_n1_SC_helper/issues
 Description: Helper package for the EBAII n1 SC traning school, to ease the analysis of scRNAseq Seurat data.

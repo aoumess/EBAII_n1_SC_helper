@@ -5,8 +5,10 @@
   QnD_viz(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
   reduction_method1 = 'pca', reduction_method2 = 'umap', nfeatures = 2000, 
   vtr = NULL, ncomp = 30, my_seed = 1337, group_by = NULL, features = NULL, 
-  pt_size = 1, dark_theme = TRUE, return_object = FALSE)
+  pt_size = 1, dark_theme = TRUE, print_plot = TRUE, return_object = FALSE, 
+  return_plot = FALSE)
 }
+
 \arguments{
   \item{sobj}{A \code{Seurat} object to describe.}
   \item{assay}{The \code{Assay} to extract data from.}

@@ -2,7 +2,8 @@
 \alias{assess_covar}
 \title{Assess the weight of cell metadata covariates on the components of a dimension reduction components}
 \usage{
-  assess_covar(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE, return.data = FALSE)
+  assess_covar(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, 
+  center = TRUE, scale = TRUE, return.data = FALSE)
 }
 \arguments{
   \item{mat}{An feature-by-cell expression \code{matrix}.}
