@@ -118,9 +118,11 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
   message('Checks ...')
   
   ### Mandatory
-  if (is.null(sobj)) stop('A Seurat object is required !')
+  if(is.null(sobj)) stop('A Seurat object is required !')
   if(!is.character(assay)) stop('Assay name should be a character (string)')
   if(ncomp <= 0) stop('[ncomp] should be a non-null positive integer (and <= N cells).')
+  if(all(return_object, return_plot)) stop("Can't return Seurat object and plot object at the same time !")
+  if(!any(return_object, return_plot, print_plot)) stop("No return of the Seurat object, nor the plot object, nor printing it : nothing to do !")
   ## Additional checks on sobj
   if(!is(sobj, 'Seurat')) stop('Provided sobj is not a proper Seurat object !')
   ## Handling slot/dimred modes
@@ -212,37 +214,43 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
   }
   
   ## Plot
-  library(patchwork)
-  if(!is.null(group_by)) {
-    pl <- Seurat::DimPlot(
-      object = sobj, 
-      dims = c(1,2), 
-      reduction = dimred, 
-      seed = my_seed, 
-      group.by = group_by, 
-      pt.size = pt_size, 
-      shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
-    # if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
-    out_plot <- if (dark_theme) Seurat::LabelClusters(plot = pl, id = group_by, color = 'white') else Seurat::LabelClusters(plot = pl, id = group_by, color = 'black')
-  } else if (!is.null(features)) {
-    print(Seurat::FeaturePlot(
-      object = sobj, 
-      dims = c(1,2), 
-      reduction = dimred, 
-      features = features, 
-      slot = 'data', 
-      pt.size = pt_size, 
-      order = TRUE,
-      cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
-  } else {
-    out_plot <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
+  
+  ### Load patchwork &operator
+  `&` <- patchwork:::`&.gg`
+  ### Handle plot
+  if (any(print_plot, return_plot)) {
+    if(!is.null(group_by)) {
+      pl <- Seurat::DimPlot(
+        object = sobj, 
+        dims = c(1,2), 
+        reduction = dimred, 
+        seed = my_seed, 
+        group.by = group_by, 
+        pt.size = pt_size, 
+        shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
+      # if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
+      out_plot <- if (dark_theme) Seurat::LabelClusters(plot = pl, id = group_by, color = 'white') else Seurat::LabelClusters(plot = pl, id = group_by, color = 'black')
+    } else if (!is.null(features)) {
+      print(Seurat::FeaturePlot(
+        object = sobj, 
+        dims = c(1,2), 
+        reduction = dimred, 
+        features = features, 
+        slot = 'data', 
+        pt.size = pt_size, 
+        order = TRUE,
+        cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
+    } else {
+      out_plot <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
+    }
+    ## Print_plot
+    if(print_plot) print(out_plot)
+    ## Return plot ?
+    if(return_plot) return(out_plot)
   }
-  ## Print_plot
-  if(print_plot) print(out_plot)
   
   ## Return object when requested
   if(return_object) return(sobj)
-  if(return_plot) return(out_plot)
 }
 
 ## Function to perform SoupX on a Seurat object
@@ -340,22 +348,6 @@ SoupX_auto <- function(scmat_filt = NULL, scmat_raw = NULL, soupQuantile = 0.9, 
 #   return(sobj)
 # }
 
-## Add a barcode-level metric based on counts (mito_rate, ) 
-count_rate_metric <- function(sobj = NULL, assay = 'RNA', features = NULL) {
-  ## Check sobj
-  if(is.null(sobj)) stop('A Seurat object is required !')
-  if(!is(sobj, 'Seurat')) stop('Provided sobj is not a proper Seurat object !')
-  cur_assays <- Seurat::Assays(sobj)
-  if (!assay %in% cur_assays) stop('Requested assay [', assay, '] not found. Available assays are : [', paste(cur_assays, collapse = ', '), ']')
-  
-  ## Get raw count expression matrix
-  count_mat <- Seurat::GetAssayData(object = sobj, assay = assay, slot = 'counts')
-  infeats <- rownames(count_mat) %in% features
-  metric_rate <- unname(as.vector(Matrix::colSums(count_mat[infeats,]) / sobj$nCount_RNA))
-  rm(count_mat)
-  return(metric_rate)
-}
-
 ## Computes Seurat's cell cycle phase/scores prediction
 CC_Seurat <- function(sobj = NULL, assay = "RNA", seurat_cc_genes = NULL, SmG2M = TRUE, nbin = 24, my_seed = 1337L) {
   
@@ -400,59 +392,6 @@ CC_Cyclone <- function(sobj = NULL, assay = 'RNA', cyclone_cc_pairs = NULL, SmG2
   if(SmG2M) sobj$CC_Cyclone_nSmG2M.Score <- cycres$normalized.scores$S - cycres$normalized.scores$G2M
   return(sobj)
 }
-
-## Performs a "correlation analysis" of covariates with dimred components.
-## . Spearman correlation for continuous covariates
-## . KW for factors
-## . Returns the matrix of comp x covariate p-values (off by default)
-## . Plots a heatmap of -log10(p)
-## sobj : Seurat object
-## dimred : name of a reduction in the Seurat object
-## return_p : if TRUE, returns the p-values matrix
-# dimred_covar_cor <- function(sobj = NULL, dimred = 'pca', ncomp = 10, return_p = FALSE) {
-#   
-#   ## Check sobj
-#   if(is.null(sobj)) stop('A Seurat object is required !')
-#   if(is.null(dimred)) stop('A dimension reduction name is required !')
-#   if(!is(sobj, 'Seurat')) stop('Provided sobj is not a proper Seurat object !')
-#   # if (! 'pca' %in% Seurat::Reductions(sobj)) stop('Reduction [', dimred, '] not found in sobj !')
-#   ## Add PCA when needed
-#   if (! dimred %in% Seurat::Reductions(sobj)) {
-#     dimred <- "pca"
-#     if (! "pca" %in% Seurat::Reductions(sobj)) {
-#       ### Not the one requested
-#       message("Computing PCA ...")
-#       sobj <- Seurat::RunPCA(object = sobj, npcs = ncomp * 2, reduction.name = dimred, verbose = FALSE)
-#     }
-#   }
-#   ## Get the PCA results
-#   cur_red <- Seurat::Reductions(object = sobj, slot = dimred)@cell.embeddings
-#   if (ncomp > ncol(cur_red)) {
-#     ncomp <- ncol(cur_red)
-#     message('More dimensions requested than available : Limiting to available ones (', ncomp, ') ...')
-#   }
-#   cur_meta <- as.data.frame(sobj@meta.data)
-#   
-#   ## Convert logical & character to factor
-#   meta_types <- vapply(seq_along(colnames(cur_meta)), function(x) is(cur_meta[,x, drop = TRUE])[1], 'a')
-#   for (z in which(meta_types == 'logical' | meta_types == 'character')) cur_meta[,z] <- as.factor(cur_meta[,z])
-#   
-#   ## Drop missing levels in factors
-#   meta_types <- vapply(seq_along(colnames(cur_meta)), function(x) is(cur_meta[,x, drop = TRUE])[1], 'a')
-#   for (z in which(meta_types == 'factor')) cur_meta[,z] <- droplevels(cur_meta[,z])
-#   
-#   ## Correlate PCs and covariates
-#   pCor <- pcaExplorer::correlatePCs(pcaobj = list(x =  cur_red), coldata = cur_meta, pcs = 1:ncomp)
-#   ## FDR adjustment
-#   pCor <- matrix(data = p.adjust(p = pCor, method = 'BH'), nrow = nrow(pCor), ncol = ncol(pCor), dimnames = dimnames(pCor))
-#   ## Heatmap
-#   pl <- -log10(pCor)
-#   pl[is.infinite(pl)] <- 999
-#   rownames(pl) <- colnames(cur_red)[1:ncomp]
-#   print(ComplexHeatmap::Heatmap(matrix = pl, name = Seurat::Project(object = sobj), cluster_rows = FALSE, cluster_columns = FALSE, col = circlize::colorRamp2(c(0,1000), c('grey95', 'blue'))))
-#   ## Return p-values
-#   if(return_p) return(pCor)
-# }
 
 
 assess_covar <- function(mat = NULL, covar.df = NULL, markers = NULL, ndim = 10L, center = TRUE, scale = TRUE, return.data = FALSE) {

@@ -22,7 +22,9 @@
   \item{features}{Vector of feaures to plot. It can be a feature (ie, a gene name), the name of a metadata column for continous data. See \code{?Seurat::FeaturePlot()}.}
   \item{pt_size}{Size of a dot in plots.}
   \item{dark_theme}{Set to \code{TRUE} to use Seurat's dark theme for plots. Recommended for better contrast. See \code{?Seurat::DarkTheme()}.}
+  \item{print_plot}{Set to \code{TRUE} (default) to print the plot on-screen.}
   \item{return_object}{Set to \code{TRUE} to return the modified \code{sobj} Seurat object with all additional entries computed to generate the visualization.}
+  \item{return_plot}{Set to \code{TRUE} to return the \code{ggplot} object.}
 }
 \description{
   This function performs a visualization of a Seurat object content as UMAP or TSNE, from any kind of data : raw counts, normalized, or scaled from an assay (= 'slot' mode), or from a 1st step dimension reduction (= 'dimred' mode). When starting from raw or normalized counts, control is given for the amount of features to use and regression of covariates, at the scaling step. For both 'modes', control is given in the amount of 1st dimred components to use for the second, using \code{ndim}. For the output plot, features of \code{DimPlot} can be used if \code{group_by} is used, or \code{FeaturePlot} if \code{features} is used. The modified \code{sobj} can be returned when using \code{return_object = TRUE}.
