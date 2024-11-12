@@ -113,7 +113,7 @@ SeuratObject_descriptor <- function(sobj = NULL, describe = 'all', sparse_level 
 ### group_by : use a metadata factor to color the visualization
 ### features : either a continous metadata, or a feature name, to color the visualization
 ### dark_theme : use adrk background (better contrast)
-QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, reduction_method1 = 'pca', reduction_method2 = 'umap', nfeatures = 2000, vtr = NULL, ncomp = 30, my_seed = 1337, group_by = NULL, features = NULL, pt_size = 1, dark_theme = TRUE, return_object = FALSE) {
+QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, reduction_method1 = 'pca', reduction_method2 = 'umap', nfeatures = 2000, vtr = NULL, ncomp = 30, my_seed = 1337, group_by = NULL, features = NULL, pt_size = 1, dark_theme = TRUE, print_plot = TRUE, return_object = FALSE, return_plot = FALSE) {
   
   message('Checks ...')
   
@@ -214,16 +214,35 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
   ## Plot
   library(patchwork)
   if(!is.null(group_by)) {
-    pl <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, group.by = group_by, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
-    if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
+    pl <- Seurat::DimPlot(
+      object = sobj, 
+      dims = c(1,2), 
+      reduction = dimred, 
+      seed = my_seed, 
+      group.by = group_by, 
+      pt.size = pt_size, 
+      shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
+    # if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
+    out_plot <- if (dark_theme) Seurat::LabelClusters(plot = pl, id = group_by, color = 'white') else Seurat::LabelClusters(plot = pl, id = group_by, color = 'black')
   } else if (!is.null(features)) {
-    print(Seurat::FeaturePlot(object = sobj, dims = c(1,2), reduction = dimred, features = features, slot = 'data', pt.size = pt_size, cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
+    print(Seurat::FeaturePlot(
+      object = sobj, 
+      dims = c(1,2), 
+      reduction = dimred, 
+      features = features, 
+      slot = 'data', 
+      pt.size = pt_size, 
+      order = TRUE,
+      cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
   } else {
-    print(Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme())
+    out_plot <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
   }
+  ## Print_plot
+  if(print_plot) print(out_plot)
   
   ## Return object when requested
   if(return_object) return(sobj)
+  if(return_plot) return(out_plot)
 }
 
 ## Function to perform SoupX on a Seurat object
