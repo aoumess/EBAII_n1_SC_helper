@@ -231,7 +231,7 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
       # if (dark_theme) print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'white')) else print(Seurat::LabelClusters(plot = pl, id = group_by, color = 'black'))
       out_plot <- if (dark_theme) Seurat::LabelClusters(plot = pl, id = group_by, color = 'white') else Seurat::LabelClusters(plot = pl, id = group_by, color = 'black')
     } else if (!is.null(features)) {
-      print(Seurat::FeaturePlot(
+      out_plot <- Seurat::FeaturePlot(
         object = sobj, 
         dims = c(1,2), 
         reduction = dimred, 
@@ -239,12 +239,13 @@ QnD_viz <- function(sobj = NULL, assay = 'RNA', slot = 'counts', dimred = NULL, 
         slot = 'data', 
         pt.size = pt_size, 
         order = TRUE,
-        cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme())
+        cols = c('white', 'blue')) & if(dark_theme) Seurat::DarkTheme()
     } else {
       out_plot <- Seurat::DimPlot(object = sobj, dims = c(1,2), reduction = dimred, seed = my_seed, pt.size = pt_size, shuffle = TRUE) & if(dark_theme) Seurat::DarkTheme()
     }
     ## Print_plot
     if(print_plot) print(out_plot)
+    
     ## Return plot ?
     if(return_plot) return(out_plot)
   }
