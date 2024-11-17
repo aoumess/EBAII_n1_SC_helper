@@ -1,9 +1,9 @@
 Encoding: UTF-8
-Package: EBAII.n1.SC.helper
+Package: SC.helper
 Type: Package
-Title: Helper package for EBAII n1 SC
-Version: 0.0.5
-Date: 2024-11-08
+Title: Helper package Seurat-based scRNAseq analysis
+Version: 0.0.6
+Date: 2024-11-17
 Author: Bastien Job
 Authors@R: person("Bastien", "Job", email = "bastien.job@inserm.fr", role = c("aut", "cre"))
 Depends: R(>= 4.0.0)
@@ -24,8 +24,8 @@ Imports:
   methods(>= 4.4.1),
   irlba(>= 2.3.5.1)
 biocViews: Software
-BugReports: https://github.com/aoumess/EBAII_n1_SC_helper/issues
-Description: Helper package for the EBAII n1 SC traning school, to ease the analysis of scRNAseq Seurat data.
+BugReports: https://github.com/aoumess/SC.helper/issues
+Description: Helper package for people analyzing their scRNAseq data using Seurat 5.
 License: GPL3 + file LICENSE
 LazyData: false
 Byte-Compile: yes
